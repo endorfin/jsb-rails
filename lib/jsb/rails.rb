@@ -1,3 +1,4 @@
+require "jsb/rails/engine"
 require "jsb/rails/version"
 
 module Jsb
