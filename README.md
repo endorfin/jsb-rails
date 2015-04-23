@@ -1,8 +1,14 @@
-# Jsb::Rails
+# jsb-rails
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/jsb/rails`. To experiment with that code, run `bin/console` for an interactive prompt.
+This gem integrates JsBehaviour Toolkit with Rails asset pipeline for easy of use.
 
-TODO: Delete this and the text above, and describe your gem
+## What is Jsb and how does it work?
+
+https://github.com/DracoBlue/jsb
+
+## What version of jsb?
+
+the latest and greatest 2.0.0
 
 ## Installation
 
@@ -22,14 +28,10 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+After bundle the jsb will be added to the asset pipeline. Add the following line to your `app/assets/javascripts/application.js` and you're done.
 
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release` to create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
+    //= require jsb
+    
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/jsb-rails/fork )
