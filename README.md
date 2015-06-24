@@ -1,6 +1,6 @@
 # jsb-rails
 
-This gem integrates JsBehaviour Toolkit with Rails asset pipeline for easy of use.
+This gem integrates JsBehaviour Toolkit with Rails asset pipeline for ease of use.
 
 ## What is Jsb and how does it work?
 
@@ -31,7 +31,7 @@ Or install it yourself as:
 After bundle the jsb will be added to the asset pipeline. Add the following line to your `app/assets/javascripts/application.js` and you're done.
 
     //= require jsb
-    
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/jsb-rails/fork )
