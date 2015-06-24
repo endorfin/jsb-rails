@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["rene.kersten@gmail.com"]
 
   spec.summary       = "This gem integrates JsBehaviourToolkit with Rails asset pipeline for ease of use."
-  spec.description   = "This gem integrates JsBehaviourToolkit with Rails asset pipeline for ease of use. "
+  spec.description   = "This gem integrates JsBehaviourToolkit with Rails asset pipeline for ease of use."
   spec.homepage      = "https://github.com/endorfin/jsb-rails"
   spec.license       = "MIT"
 
