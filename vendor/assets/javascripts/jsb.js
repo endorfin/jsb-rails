@@ -1,8 +1,8 @@
 /*
- * jsb 2.0.0
+ * jsb
  *
  * This file is part of jsb (Javascript Behaviour Toolkit).
- * Copyright (c) 2010-2014 DracoBlue, http://dracoblue.net/
+ * Copyright (c) 2010-2015 DracoBlue, http://dracoblue.net/
  *
  * Licensed under the terms of MIT License. For the full copyright and license
  * information, please see the LICENSE file in the root folder.
@@ -15,6 +15,7 @@ jsb = {
     handlers: {},
     listeners: [],
     last_event_values: {},
+    sticky_event_values: {},
 
     /**
      * Set the prefix for the jsb toolkit.
@@ -71,13 +72,19 @@ jsb = {
      * @param {String} name
      * @param {Object} [values={}]
      */
-    fireEvent: function(name, values) {
+    fireEvent: function(name, values, sticky) {
         values = values || {};
+        sticky = sticky || false;
 
         /*
-         * Remember the last value for calls to `jsb.whenFired`
+         * Remember the last values for calls to `jsb.whenFired`
          */
-        this.last_event_values[name] = values;
+        if (sticky) {
+            this.sticky_event_values[name] = this.sticky_event_values[name] || [];
+            this.sticky_event_values[name].push(values);
+        } else {
+            this.last_event_values[name] = values;
+        }
 
         var listeners = this.listeners;
         var listeners_length = listeners.length;
@@ -89,6 +96,10 @@ jsb = {
         {
             this.removeBoundListenersForInstance(values);
         }
+    },
+
+    fireStickyEvent: function(name, values) {
+        this.fireEvent(name, values, true);
     },
 
     /**
@@ -196,19 +207,50 @@ jsb = {
                 if (this.last_event_values.hasOwnProperty(key) && key.match(name_or_regexp)) {
                     (function(key)
                     {
+                        var last_value = that.last_event_values[key];
                         setTimeout(function()
                         {
-                            that.rawFireEventToListener([cb, name_or_regexp, filter], key, that.last_event_values[key]);
+                            that.rawFireEventToListener([cb, name_or_regexp, filter], key, last_value);
                         }, 0);
+                    })(key);
+                }
+            }
+            for (var key in this.sticky_event_values) {
+                if (this.sticky_event_values.hasOwnProperty(key) && key.match(name_or_regexp)) {
+                    (function(key)
+                    {
+                        var last_values = that.sticky_event_values[key];
+                        var last_values_length = last_values.length;
+                        for (var i = 0; i < last_values_length; i++) {
+                            (function(last_value) {
+                                setTimeout(function()
+                                {
+                                    that.rawFireEventToListener([cb, name_or_regexp, filter], key, last_value);
+                                }, 0);
+                            })(last_values[i]);
+                        }
                     })(key);
                 }
             }
         } else {
             if (typeof this.last_event_values[name_or_regexp] !== 'undefined') {
+                var last_value = that.last_event_values[name_or_regexp];
                 setTimeout(function()
                 {
-                    that.rawFireEventToListener([cb, name_or_regexp, filter], name_or_regexp, that.last_event_values[name_or_regexp]);
+                    that.rawFireEventToListener([cb, name_or_regexp, filter], name_or_regexp, last_value);
                 }, 0);
+            }
+            if (typeof this.sticky_event_values[name_or_regexp] !== 'undefined') {
+                var last_values = that.sticky_event_values[name_or_regexp];
+                var last_values_length = last_values.length;
+                for (var i = 0; i < last_values_length; i++) {
+                    (function(last_value) {
+                        setTimeout(function()
+                        {
+                            that.rawFireEventToListener([cb, name_or_regexp, filter], name_or_regexp, last_value);
+                        }, 0);
+                    })(last_values[i]);
+                }
             }
         }
 
@@ -382,14 +424,15 @@ if (typeof jQuery !== 'undefined') {
         }
     };
 
-    /*
-     * Fire domready in a jQuery way!
-     */
+    if (typeof window !== "undefined") {
+        /*
+         * Fire domready in a jQuery way!
+         */
 
-    jQuery(window.document).ready(function() {
-        jsb.applyBehaviour(window.document);
-    });
-
+        jQuery(window.document).ready(function () {
+            jsb.applyBehaviour(window.document);
+        });
+    }
 } else if (typeof MooTools !== 'undefined') {
     /*
      * If we have MooTools available, we can use the MooTools methods instead
@@ -420,31 +463,37 @@ if (typeof jQuery !== 'undefined') {
         }
     };
 
-    /*
-     * Fire domready in a mootools way!
-     */
+    if (typeof window !== "undefined") {
+        /*
+         * Fire domready in a mootools way!
+         */
 
-    $(window).addEvent('domready', function() {
-        jsb.applyBehaviour(window.document);
-    });
-} else {
-
-    /*
-     * Fire domready in a native way!
-     */
-    if (window.addEventListener) {
-        window.addEventListener("DOMContentLoaded", function() {
-            jsb.applyBehaviour(window.document);
-        }, true);
-    } else if(window.attachEvent)  {
-        window.attachEvent("onLoad",function() {
+        $(window).addEvent('domready', function () {
             jsb.applyBehaviour(window.document);
         });
     }
+} else {
+
+    if (typeof window !== "undefined") {
+        /*
+         * Fire domready in a native way!
+         */
+        if (window.addEventListener) {
+            window.addEventListener("DOMContentLoaded", function() {
+                jsb.applyBehaviour(window.document);
+            }, true);
+        } else if(window.attachEvent)  {
+            window.attachEvent("onLoad",function() {
+                jsb.applyBehaviour(window.document);
+            });
+        }
+    }
 }
 
-if (typeof define !== "undefined") {
+if (typeof define !== "undefined" && define.amd) {
     define('jsb', function() {
         return jsb;
     });
+} else if (typeof module === 'object' && module.exports) {
+    module.exports = jsb;
 }
