@@ -8,7 +8,7 @@ https://github.com/DracoBlue/jsb
 
 ## What version of jsb?
 
-the latest and greatest 2.3.0
+the latest and greatest 3.0.0
 
 ## Installation
 
